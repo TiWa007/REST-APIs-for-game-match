@@ -1,11 +1,9 @@
 package com.tiwa007.gamematchrestapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tiwa007.gamematchrestapi.Service.UserService;
+import com.tiwa007.gamematchrestapi.service.UserService;
 import com.tiwa007.gamematchrestapi.entity.Interest;
 import com.tiwa007.gamematchrestapi.entity.User;
-import com.tiwa007.gamematchrestapi.repository.InterestRepository;
-import com.tiwa007.gamematchrestapi.repository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.verification.VerificationModeFactory;
@@ -22,7 +20,6 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

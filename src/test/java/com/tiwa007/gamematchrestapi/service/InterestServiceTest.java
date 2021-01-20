@@ -1,4 +1,4 @@
-package com.tiwa007.gamematchrestapi.Service;
+package com.tiwa007.gamematchrestapi.service;
 
 import com.tiwa007.gamematchrestapi.common.exception.InvalidRequestException;
 import com.tiwa007.gamematchrestapi.entity.Interest;

@@ -274,10 +274,6 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].userId", is(1005)));
     }
 
-
-
-//    Todo for rest methods
-
 //    Helper methods
 
     private UserRequest produceTestUser(String name, String gender, String nickname, String geography, Integer credit,

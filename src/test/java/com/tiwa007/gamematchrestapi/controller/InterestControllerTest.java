@@ -1,7 +1,7 @@
 package com.tiwa007.gamematchrestapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tiwa007.gamematchrestapi.Service.InterestService;
+import com.tiwa007.gamematchrestapi.service.InterestService;
 import com.tiwa007.gamematchrestapi.entity.Interest;
 import com.tiwa007.gamematchrestapi.entity.User;
 import org.junit.Test;

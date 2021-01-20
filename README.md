@@ -16,7 +16,7 @@ Main features include:
 
 - [Architecture](#architecture)
 - [REST API Design](#rest-api-design)
-- [Datamodel](#datamodel)
+- [Service layer](#service-layer)
 - [Unit testing](#unit-testing)
 
 #### Architecture
@@ -29,19 +29,39 @@ The below image shows the high level architecture of the backend server.
 \
 Package overview:
 - **`gamematchrestapi.controller`**: Provides the REST API.
+- **`gamematchrestapi.service`**: Main logic of the application in POJOs (Plain Old Java Objects).
 - **`gamematchrestapi.entity`**: Classes that represent persistable entities.
 - **`gamematchrestapi.repository`**: Classes performs CRUD (Create, Read, Update, Delete) operations and act as the bridge to the H2 Database.
-- **`gamematchrestapi.exception`**: Contains custom exceptions.
-- **`gamematchrestapi.config`**: Classes for the configuration of Swagger 3 and CORS.
+- **`gamematchrestapi.common`**:  Common component contains custom exceptions and configuration of Swagger 3 and CORS.
 
 ![High Level Architecture](docs/images/highlevelArchitecture.png)
 
 #### REST API Design
-The following tables shows the design of the REST API. 
+The following tables shows the design of the REST API. The class ``UserController`` implements No. 1-8 API methods for ``User`` entity. 
+The class ``InterestController`` implements No. 9-13 API methods for ``Interest`` entity. 
 ![REST API Design1](docs/images/RESTAPI1.png)
 ![REST API Design2](docs/images/RESTAPI2.png)
 
-#####Policies
+#### Service layer
+
+The service layer handles the business logic of the system. 
+It is responsible for: 
+- Managing relationships between entities, e.g. cascade logic for create/update/delete.
+- Searching for desired user and interest
+
+##### Datamodel
+There are two entities: `User` and `Interest`. Entity `User` has name, gender, nickname and geography attributes. 
+Entity `Interest` has game, level, credit attributes. Entity `User` have an one-to-many relationship with Entity `Interest`.
+
+![Datamodels](docs/images/Datamodels.png)
+
+To ensure they are in a valid state, data was validated inside entities before creating/updating them. 
+[Hibernate Validator](http://hibernate.org/validator/) and custom validator (`@InStringArray`) were used to 
+validate application constraints as shown in the following table.
+
+![Input validator](docs/images/validator.png)
+
+##### Policies
 
 API for creating:
 + Attempt to create an entity with invalid data: Throws `MethodArgumentNotValidException`.
@@ -61,24 +81,16 @@ API for deleting:
 API usage was documented using ``Swagger 3`` and the document is available at http://localhost:8080/swagger-ui/#/ 
 when the server is running.
 
-#### Datamodel
-There are two entities: `User` and `Interest`. Entity `User` has name, gender, nickname and geography attributes. 
-Entity `Interest` has game, level, credit attributes. Entity `User` have an one-to-many relationship with Entity `Interest`.
-
-![Datamodels](docs/images/Datamodels.png)
-
-To ensure they are in a valid state, data was validated inside entities before creating/updating them. 
-[Hibernate Validator](http://hibernate.org/validator/) and custom validator (`@InStringArray`) were used to 
-validate application constraints as shown in the following table.
-
-![Input validator](docs/images/validator.png)
-
 
 #### Unit testing
 
 - The controller classes was tested with Spring Boot and ``@WebMvcTest``
 - In the data access layer, JPA Queries of the repository classes was tested with Spring Boot and ``@DataJpaTest``
 - Integration Tests with ``@SpringBootTest``
+
+The following image shows the coverage of the unit testing. The method and line coverage are above 85%.
+
+![Unit Test Coverage](docs/images/Coverage.png)
 
 
 ##### Build the Project

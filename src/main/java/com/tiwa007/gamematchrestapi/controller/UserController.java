@@ -1,7 +1,7 @@
 package com.tiwa007.gamematchrestapi.controller;
 
 
-import com.tiwa007.gamematchrestapi.Service.UserService;
+import com.tiwa007.gamematchrestapi.service.UserService;
 import com.tiwa007.gamematchrestapi.entity.Interest;
 import com.tiwa007.gamematchrestapi.entity.User;
 import io.swagger.annotations.Api;
