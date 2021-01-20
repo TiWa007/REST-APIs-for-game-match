@@ -1,7 +1,7 @@
 package com.tiwa007.gamematchrestapi.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tiwa007.gamematchrestapi.exception.validator.InStringArray;
+import com.tiwa007.gamematchrestapi.common.exception.validator.InStringArray;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

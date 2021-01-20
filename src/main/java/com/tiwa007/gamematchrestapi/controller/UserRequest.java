@@ -1,25 +1,16 @@
-package com.tiwa007.gamematchrestapi.entity;
+package com.tiwa007.gamematchrestapi.controller;
+
 
 import com.tiwa007.gamematchrestapi.common.exception.validator.InStringArray;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
-@Entity
-@Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="user_id")
-    private Long userId;
+public class UserRequest {
 
     @NotBlank(message = "Name cannot be empty")
     @Size(min = 2, max = 45, message = "Name should have more than 2 characters")
@@ -41,16 +32,14 @@ public class User {
     @InStringArray(message = "Geography should be one of 'Europe', 'Asia', 'USA'", values = {"Europe","Asia", "USA"})
     private String geography;
 
-//  One to Many   https://blog.csdn.net/liyiming2017/article/details/90218062
+    //  One to Many   https://blog.csdn.net/liyiming2017/article/details/90218062
     @Valid
-    @Fetch(FetchMode.SUBSELECT)
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<Interest> interestSet = new HashSet<>();
+    private Set<InterestRequest> interestSet = new HashSet<>();
 
-    public User() {
+    public UserRequest() {
     }
 
-    public User(String name, String gender, String nickname, String geography, Set<Interest> interestSet) {
+    public UserRequest(String name, String gender, String nickname, String geography, Set<InterestRequest> interestSet) {
         this.name = name;
         this.gender = gender;
         this.nickname = nickname;
@@ -58,19 +47,11 @@ public class User {
         this.interestSet = interestSet;
     }
 
-    public User(String name, String gender, String nickname, String geography) {
+    public UserRequest(String name, String gender, String nickname, String geography) {
         this.name = name;
         this.gender = gender;
         this.nickname = nickname;
         this.geography = geography;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public String getName() {
@@ -105,28 +86,12 @@ public class User {
         this.geography = geography;
     }
 
-    public Set<Interest> getInterestSet() {
+    public Set<InterestRequest> getInterestSet() {
         return interestSet;
     }
 
-    public void setInterestSet(Set<Interest> interestSet) {
+    public void setInterestSet(Set<InterestRequest> interestSet) {
         this.interestSet = interestSet;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(userId, user.userId) &&
-                Objects.equals(name, user.name) &&
-                Objects.equals(gender, user.gender) &&
-                Objects.equals(nickname, user.nickname) &&
-                Objects.equals(geography, user.geography);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, name, gender, nickname, geography);
-    }
 }

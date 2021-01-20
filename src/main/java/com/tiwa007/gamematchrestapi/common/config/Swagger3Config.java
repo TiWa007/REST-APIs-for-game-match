@@ -1,4 +1,4 @@
-package com.tiwa007.gamematchrestapi.config;
+package com.tiwa007.gamematchrestapi.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

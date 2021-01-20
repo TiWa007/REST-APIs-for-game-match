@@ -1,4 +1,4 @@
-package com.tiwa007.gamematchrestapi.exception.validator;
+package com.tiwa007.gamematchrestapi.common.exception.validator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

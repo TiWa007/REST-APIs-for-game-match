@@ -1,4 +1,4 @@
-package com.tiwa007.gamematchrestapi.exception;
+package com.tiwa007.gamematchrestapi.common.exception;
 
 import java.util.Date;
 

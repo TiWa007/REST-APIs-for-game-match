@@ -11,8 +11,6 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-//    List<User> findUserByNickname(String nickname);
-
     @Query("SELECT user FROM Interest interest WHERE interest.game = :game AND interest.level = :level " +
             "AND interest.user.geography = :geography")
     List<User> findMatchUserByGameAndLevelAndGeography(@Param("game") String game,

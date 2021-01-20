@@ -13,19 +13,19 @@ VALUES
 
 INSERT INTO interests(interest_id, game, level, credit, user_id)
 VALUES
-(1001, 'fortnite', 'noob', 10, '1001' ),
-(1002, 'call of duty', 'noob', 8, '1001' ),
-(1003, 'fortnite', 'noob', 5, '1002' ),
-(1004, 'dota', 'noob', 4, '1002' ),
-(1005, 'among us', 'pro', 3, '1002' ),
-(1006, 'fortnite', 'noob', 0, '1003' ),
-(1007, 'among us', 'invincible', 12, '1003' ),
-(1008, 'dota', 'pro', 6, '1004' ),
-(1009, 'dota', 'noob', 5, '1005' ),
-(1010, 'among us', 'invincible', 4, '1006' ),
-(1011, 'fortnite', 'noob', 3, '1007' ),
-(1012, 'valhalla', 'pro', 0, '1008' ),
-(1013, 'dota', 'invincible', 10, '1008' ),
-(1014, 'valhalla', 'pro', 9, '1009' ),
-(1015, 'valhalla', 'noob', 0, '1010' );
+(1001, 'fortnite', 'noob', 10, 1001 ),
+(1002, 'call of duty', 'noob', 8, 1001 ),
+(1003, 'fortnite', 'noob', 5, 1002 ),
+(1004, 'dota', 'noob', 4, 1002 ),
+(1005, 'among us', 'pro', 3, 1002 ),
+(1006, 'fortnite', 'noob', 0, 1003 ),
+(1007, 'among us', 'invincible', 12, 1003 ),
+(1008, 'dota', 'pro', 6, 1004 ),
+(1009, 'dota', 'noob', 5, 1005 ),
+(1010, 'among us', 'invincible', 4, 1006 ),
+(1011, 'fortnite', 'noob', 3, 1007 ),
+(1012, 'valhalla', 'pro', 0, 1008 ),
+(1013, 'dota', 'invincible', 10, 1008 ),
+(1014, 'valhalla', 'pro', 9, 1009 ),
+(1015, 'valhalla', 'noob', 0, 1010 );
 

@@ -1,12 +1,9 @@
 package com.tiwa007.gamematchrestapi.controller;
 
 
+import com.tiwa007.gamematchrestapi.Service.UserService;
 import com.tiwa007.gamematchrestapi.entity.Interest;
 import com.tiwa007.gamematchrestapi.entity.User;
-import com.tiwa007.gamematchrestapi.exception.InvalidRequestException;
-import com.tiwa007.gamematchrestapi.exception.ResourceNotFoundException;
-import com.tiwa007.gamematchrestapi.repository.InterestRepository;
-import com.tiwa007.gamematchrestapi.repository.UserRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -15,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,78 +22,61 @@ import java.util.Set;
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Resource
     @Autowired
-    private UserRepository userRepository;
-
-    @Resource
-    @Autowired
-    private InterestRepository interestRepository;
-
-    private final List<String> GAME_LIST = Arrays.asList("fortnite", "call of duty", "dota", "valhalla", "among us");
-    private final List<String> LEVEL_LIST = Arrays.asList("noob", "pro", "invincible");
-    private final List<String> GEO_LIST = Arrays.asList("Europe","Asia", "USA");
-
+    private UserService userService;
 
     // get all users
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers(){
-        List<User> userList = userRepository.findAll();
+        List<User> userList = userService.getAllUsers();
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
     // get user by id
     @GetMapping(path = "/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable Long userId){
-        return new ResponseEntity<>(this.getUserFromUserId(userId), HttpStatus.OK);
+        return new ResponseEntity<>(this.userService.getUserById(userId), HttpStatus.OK);
     }
 
     // create user
     @ApiOperation(value = "Create new user",
-            notes = "Create new user. Interests of user will also be created if exists. User can only have one interest for one game",
+            notes = "Create new user. Interests of user will also be created if exists. " +
+                    "In [Request Body], [name] and [nickname] cannot be empty and should only consist of letter and number with more than 2 characters. " +
+                    "[gender] cannot be empty and should be 'male' or 'female'. " +
+                    "[geography] cannot be empty and should be one of 'Europe', 'Asia', 'USA'. " +
+                    "[interestSet] can be empty. For attributes of interest, " +
+                    "[game] cannot be empty should be one of 'fortnite', 'call of duty', 'dota', 'valhalla', 'among us'. " +
+                    "[level] cannot be empty and should be one of 'noob', 'pro', 'invincible'. " +
+                    "[credit] can be left empy but cannot be negative. " +
+                    "User can only have one interest for one game",
             response = User.class)
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-
-//        check whether game more than one
-        Set<String> gameSet = new HashSet<>();
-        for (Interest interest :  user.getInterestSet()) {
-            if (gameSet.contains(interest.getGame()))
-                throw new InvalidRequestException("User has different interests with same game");
-            gameSet.add(interest.getGame());
-        }
-
-//      post user
-        User registeredUser = userRepository.save(user);
-
-//      update userId of interest
-        if (registeredUser.getInterestSet() != null) {
-            Set<Interest> interestSet = registeredUser.getInterestSet();
-            for (Interest interest : interestSet) {
-                interest.setUser(registeredUser);
-                interestRepository.save(interest);
-            }
-        }
-        return new ResponseEntity<>(this.userRepository.findById(registeredUser.getUserId()).get(), HttpStatus.CREATED);
+    public ResponseEntity<User> createUser(@Valid @RequestBody UserRequest userRequest) {
+        User user = this.createUserFromUserRequest(userRequest);
+        User createdUser = this.userService.createUser(user);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     /**
      * Update user by userId. Interest of user will not be updated.
-     * @param user
+     * @param userRequestWithoutInterest
      * @param userId
      * @return HttpStatus.OK
      */
     @ApiOperation(value = "Update user",
-            notes = "Update user by userId. Interest of user will not be updated.")
+            notes = "Update only user information by userId. Interest of user should not contain. " +
+                    "In [Request Body], [name] and [nickname] cannot be empty and should only consist of letter and number with more than 2 characters. " +
+                    "[gender] cannot be empty and should be 'male' or 'female'. " +
+                    "[geography] cannot be empty and should be one of 'Europe', 'Asia', 'USA'. " +
+                    "User can only have one interest for one game")
     @PutMapping("/{userId}")
-    public ResponseEntity updateUserById(@Valid @RequestBody User user, @PathVariable Long userId) {
-        User existingUser = this.getUserFromUserId(userId);
-//      update user
-        existingUser.setGender(user.getGender());
-        existingUser.setGeography(user.getGeography());
-        existingUser.setName(user.getName());
-        existingUser.setNickname(user.getNickname());
-        userRepository.save(existingUser);
+    public ResponseEntity updateUserById(@Valid @RequestBody UserRequestWithoutInterest userRequestWithoutInterest
+            , @PathVariable Long userId) {
+
+        User user = new User(userRequestWithoutInterest.getName(), userRequestWithoutInterest.getGender(),
+                userRequestWithoutInterest.getNickname(), userRequestWithoutInterest.getGeography());
+
+        this.userService.updateUserById(user, userId);
 
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -111,9 +89,7 @@ public class UserController {
     @ApiOperation(value = "Delete user and interest of the user by userId.")
     @DeleteMapping("/{userId}")
     public ResponseEntity deleteUserById(@PathVariable Long userId){
-        this.getUserById(userId);
-        interestRepository.deleteInterestsByUserId(userId);
-        userRepository.deleteById(userId);
+        this.userService.deleteUserById(userId);
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -148,8 +124,7 @@ public class UserController {
                     example = "Europe",
                     required = true)
             @RequestParam String geography){
-        this.checkGameAndLevelAndGeography(game, level, geography);
-        List<User> matchUserList = userRepository.findMatchUserByGameAndLevelAndGeography(game, level, geography);
+        List<User> matchUserList = this.userService.getMatchUserByGameAndLevelAndGeography(game, level, geography);
         return new ResponseEntity<>(matchUserList, HttpStatus.OK);
     }
 
@@ -165,12 +140,7 @@ public class UserController {
             @PathVariable Long userId,
             @PathVariable Long interestId){
 
-        User user = this.getUserFromUserId(userId);
-        Interest userMatchInterest = this.getInterestFromInterestId(interestId, userId);
-        List<User> matchUserList = userRepository.findMatchUserByGameAndLevelAndGeography(userMatchInterest.getGame(),
-                userMatchInterest.getLevel(), user.getGeography());
-
-        matchUserList.remove(user);
+        List<User> matchUserList = this.userService.getOtherUserMatchUserInterest(userId, interestId);
 
         return new ResponseEntity<>(matchUserList, HttpStatus.OK);
     }
@@ -197,157 +167,21 @@ public class UserController {
                     required = true)
             @RequestParam String level){
 
-        this.checkGameAndLevelAndGeography(game, level, null);
-
-        List<User> userList = this.userRepository.findUserWithMaxCreditByGameAndLevel(game, level);
+        List<User> userList = this.userService.getUserWithMaxCreditByGameAndLevel(game, level);
 
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
-    //------------------- Interest --------------------------
+//    Helper methods
 
-    // get interest by interestId
-    @GetMapping(path = "/{userId}/interest/{interestId}")
-    public ResponseEntity<Interest> getInterestByInterestId(@PathVariable Long userId,
-                                                @PathVariable Long interestId){
-        Interest interest =  this.getInterestFromInterestId(userId, interestId);
-        return new ResponseEntity<>(interest, HttpStatus.OK);
-    }
-
-    @PostMapping(path = "/{userId}/interest")
-    public ResponseEntity<Interest> createUserInterest(@Valid @RequestBody Interest interest,
-                                                   @PathVariable Long userId){
-        User user =  this.getUserFromUserId(userId);
-        List<Interest> interestList = this.interestRepository.findInterestByUserAndGame(user, interest.getGame());
-//        post interest
-        if (interest.getInterestId() == null && interestList.size() > 0)
-            throw new InvalidRequestException("User already has interest with game: " + interest.getGame());
-
-        interest.setUser(user);
-        Interest resInterest = interestRepository.save(interest);
-        return new ResponseEntity<>(resInterest, HttpStatus.OK);
-    }
-
-    @PutMapping(path = "/{userId}/interest/{interestId}")
-    public ResponseEntity updateUserInterestByInterestId(@Valid @RequestBody Interest interest,
-                                                   @PathVariable Long userId,
-                                                   @PathVariable Long interestId){
-        if (interest.getInterestId() != interestId)
-            throw new InvalidRequestException("The interest has a different interestId: " + interest.getInterestId()
-            + " from path variable: " + interestId);
-
-        User user =  this.getUserFromUserId(userId);
-
-        Interest existingInterest = this.getInterestFromInterestId(interestId, userId);
-        if (existingInterest.getGame() != interest.getGame()) {
-            List<Interest> interestList = this.interestRepository.findInterestByUserAndGame(user, interest.getGame());
-            if (interestList.size() > 0)
-                throw new InvalidRequestException("User already has interest with game: " + interest.getGame());
-
+    private User createUserFromUserRequest(UserRequest userRequest) {
+        User user = new User(userRequest.getName(), userRequest.getGender(), userRequest.getNickname(), userRequest.getGeography());
+        Set<Interest> interestSet = new HashSet<>();
+        for (InterestRequest interestRequest : userRequest.getInterestSet()) {
+            Interest interest = new Interest(interestRequest.getGame(), interestRequest.getLevel(), interestRequest.getCredit(), null);
+            interestSet.add(interest);
         }
-
-        existingInterest.setCredit(interest.getCredit());
-        existingInterest.setGame(interest.getGame());
-        existingInterest.setLevel(interest.getLevel());
-        interestRepository.save(existingInterest);
-
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{userId}/interest/{interestId}")
-    public ResponseEntity deleteUserInterestByInterestId(@PathVariable Long userId, @PathVariable Long interestId){
-
-        this.getUserFromUserId(userId);
-        this.getInterestFromInterestId(interestId, userId);
-
-        interestRepository.deleteById(interestId);
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-    /**
-     * Update user interest credit
-     * @param userId
-     * @param interestId
-     * @param credit
-     */
-    @ApiOperation(value = "Update user interest credit")
-    @PutMapping(path="/{userId}/interest/{interestId}/credit")
-    public ResponseEntity updateUserInterestCreditByInterestId(@PathVariable Long userId,
-                                                               @PathVariable Long interestId,
-                                                               @ApiParam(
-                                                                       name = "credit",
-                                                                       type = "String",
-                                                                       value = "Credit should be zero or positive integer",
-                                                                       example = "1",
-                                                                       required = true)
-                                                               @RequestParam Integer credit) {
-
-        if (credit < 0)
-            throw new InvalidRequestException("Credit should be zero or positive");
-
-        this.getUserFromUserId(userId);
-        this.getInterestFromInterestId(interestId, userId);
-
-        this.interestRepository.updateUserInterestCredit(interestId, credit);
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-    /**
-     * Check game, level and geography whether belongs corresponding list
-     * @param game
-     * @param level
-     * @param geography
-     * @throws InvalidRequestException
-     */
-    private void checkGameAndLevelAndGeography(String game, String level, String geography) {
-        StringBuilder message = new StringBuilder();
-        if (game != null && !this.GAME_LIST.contains(game)) {
-            message.append("Invalid ").append("game: ").append(game).append(" and it should be one of ")
-                    .append(GAME_LIST.toString());
-        }
-        if (level != null && !this.LEVEL_LIST.contains(level)) {
-            if (message.length() != 0) message.append("; ");
-            message.append("Invalid ").append("level: ").append(level).append(" and it should be one of ")
-                    .append(LEVEL_LIST.toString());
-        }
-        if (geography != null && !this.GEO_LIST.contains(geography)) {
-            if (message.length() != 0) message.append("; ");
-            message.append("Invalid ").append("geography: ").append(geography).append(" and it should be one of ")
-                    .append(GEO_LIST.toString());
-        }
-        if (message.length() > 0)
-            throw new InvalidRequestException(message.toString());
-    }
-
-    /**
-     * Get user by userId and check whether user exists
-     * @param userId
-     * @return User
-     * @throws ResourceNotFoundException
-     * if user does not exist with userId
-     */
-    private User getUserFromUserId(Long userId) {
-        User user =  this.userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User cannot be found with id: " + userId));
+        user.setInterestSet(interestSet);
         return user;
-    }
-
-    /**
-     * Get interest by interestId and check whether interest exists and the userId of interest is the same as userId
-     * @param interestId
-     * @param userId
-     * @return Interest
-     * @throws ResourceNotFoundException
-     * if interest does not exist with interestId
-     * @throws InvalidRequestException
-     * if user with userId does not have the interest with interestId
-     */
-    private Interest getInterestFromInterestId(Long interestId, Long userId) {
-        Interest interest = interestRepository.findById(interestId)
-                .orElseThrow(() -> new ResourceNotFoundException("Interest cannot be found with id: " + interestId));
-        if (interest.getUser() == null || interest.getUser().getUserId() != userId)
-            throw new InvalidRequestException("User with userId: " + userId +
-                    " does not have the interest with interestId : " + interestId);
-        return interest;
     }
 }
