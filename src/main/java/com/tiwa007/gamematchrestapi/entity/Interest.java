@@ -1,11 +1,8 @@
 package com.tiwa007.gamematchrestapi.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tiwa007.gamematchrestapi.common.exception.validator.InStringArray;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.Objects;
 
 @Entity
@@ -18,17 +15,11 @@ public class Interest {
     private Long interestId;
 
     // fortnite, call of duty, dota, valhalla, among us
-    @NotBlank(message = "Game cannot be empty")
-    @InStringArray(message = "Game should be one of 'fortnite', 'call of duty', 'dota', 'valhalla', 'among us'",
-            values = {"fortnite", "call of duty", "dota", "valhalla", "among us"})
     private String game;
 
     // noob, pro, invincible
-    @NotBlank(message = "Level cannot be empty")
-    @InStringArray(message = "Level should be one of 'noob', 'pro', 'invincible'", values = {"noob", "pro", "invincible"})
     private String level;
 
-    @PositiveOrZero(message = "Credit cannot be negative")
     @Column(columnDefinition = "integer default 0")
     private Integer credit;
 

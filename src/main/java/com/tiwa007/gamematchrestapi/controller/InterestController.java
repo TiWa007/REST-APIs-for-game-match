@@ -34,7 +34,7 @@ public class InterestController {
             notes = "Create new interest. " +
                     "In [Request Body], [game] cannot be empty should be one of 'fortnite', 'call of duty', 'dota', 'valhalla', 'among us'. " +
                     "[level] cannot be empty and should be one of 'noob', 'pro', 'invincible'. " +
-                    "[credit] can be left empy but cannot be negative. " +
+                    "[credit] can be left empty but cannot be negative. " +
                     "User can only have one interest for one game",
             response = Interest.class)
     @PostMapping(path = "/{userId}/interest")
@@ -42,7 +42,6 @@ public class InterestController {
                                                        @PathVariable Long userId){
         Interest interest = new Interest(interestRequest.getGame(), interestRequest.getLevel(), interestRequest.getCredit(), null);
         Interest resInterest = this.interestService.createUserInterest(interest, userId);
-
         return new ResponseEntity<>(resInterest, HttpStatus.OK);
     }
 
@@ -50,7 +49,7 @@ public class InterestController {
             notes = "Update interest. " +
                     "In [Request Body], [game] cannot be empty should be one of 'fortnite', 'call of duty', 'dota', 'valhalla', 'among us'. " +
                     "[level] cannot be empty and should be one of 'noob', 'pro', 'invincible'. " +
-                    "[credit] can be left empy but cannot be negative. " +
+                    "[credit] can be left empty but cannot be negative. " +
                     "User can only have one interest for one game",
             response = Interest.class)
     @PutMapping(path = "/{userId}/interest/{interestId}")

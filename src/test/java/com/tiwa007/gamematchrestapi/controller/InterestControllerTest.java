@@ -55,10 +55,10 @@ public class InterestControllerTest {
         mockMvc.perform(get("/api/user/{userId}/interest/{interestId}", userList.get(0).getUserId(), interest.getInterestId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.interestId", is(1)))
-                .andExpect(jsonPath("$.game", is("dota")))
-                .andExpect(jsonPath("$.level", is("noob")))
-                .andExpect(jsonPath("$.credit", is(0)));
+                .andExpect(jsonPath("$.interestId", is(interest.getInterestId().intValue())))
+                .andExpect(jsonPath("$.game", is(interest.getGame())))
+                .andExpect(jsonPath("$.level", is(interest.getLevel())))
+                .andExpect(jsonPath("$.credit", is(interest.getCredit())));
 
         verify(interestService, VerificationModeFactory.times(1))
                 .getInterestByInterestId(userList.get(0).getUserId(), interest.getInterestId());

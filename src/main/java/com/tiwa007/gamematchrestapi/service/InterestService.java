@@ -21,10 +21,6 @@ public class InterestService {
     @Autowired
     private InterestRepository interestRepository;
 
-    private final List<String> GAME_LIST = Arrays.asList("fortnite", "call of duty", "dota", "valhalla", "among us");
-    private final List<String> LEVEL_LIST = Arrays.asList("noob", "pro", "invincible");
-    private final List<String> GEO_LIST = Arrays.asList("Europe","Asia", "USA");
-
 
     // get interest by interestId
     public Interest getInterestByInterestId(Long userId, Long interestId){
@@ -52,6 +48,7 @@ public class InterestService {
         User user =  this.getUserFromUserId(userId);
 
         Interest existingInterest = this.getInterestFromInterestId(interestId, userId);
+
         if (existingInterest.getGame() != interest.getGame()) {
             List<Interest> interestList = this.interestRepository.findInterestByUserAndGame(user, interest.getGame());
             if (interestList.size() > 1 ||

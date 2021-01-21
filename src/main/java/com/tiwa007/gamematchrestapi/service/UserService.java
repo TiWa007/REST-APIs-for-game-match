@@ -44,7 +44,7 @@ public class UserService {
 
 //        check whether game more than one
         Set<String> gameSet = new HashSet<>();
-        for (Interest interest :  user.getInterestSet()) {
+        for (Interest interest : user.getInterestSet()) {
             if (gameSet.contains(interest.getGame()))
                 throw new InvalidRequestException("User has different interests with same game");
             gameSet.add(interest.getGame());
@@ -85,7 +85,7 @@ public class UserService {
      * @param userId
      */
     public void deleteUserById(Long userId){
-        this.getUserById(userId);
+        this.getUserFromUserId(userId);
         interestRepository.deleteInterestsByUserId(userId);
         userRepository.deleteById(userId);
     }

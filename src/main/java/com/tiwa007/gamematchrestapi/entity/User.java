@@ -1,14 +1,9 @@
 package com.tiwa007.gamematchrestapi.entity;
 
-import com.tiwa007.gamematchrestapi.common.exception.validator.InStringArray;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -21,28 +16,16 @@ public class User {
     @Column(name="user_id")
     private Long userId;
 
-    @NotBlank(message = "Name cannot be empty")
-    @Size(min = 2, max = 45, message = "Name should have more than 2 characters")
-    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "Name can only consist of letter and number")
     private String name;
 
     // male, female
-    @NotBlank(message = "Gender cannot be empty")
-    @InStringArray(message = "Gender should be 'male' or 'female'", values = {"male","female"})
     private String gender;
 
-    @NotBlank(message = "Nickname cannot be empty")
-    @Size(min = 2, max = 45, message = "Name should have more than 2 characters")
-    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "Nickname can only consist of letter and number")
     private String nickname;
 
     //    Europe, Asia, USA
-    @NotBlank(message = "Geography cannot be empty")
-    @InStringArray(message = "Geography should be one of 'Europe', 'Asia', 'USA'", values = {"Europe","Asia", "USA"})
     private String geography;
 
-//  One to Many   https://blog.csdn.net/liyiming2017/article/details/90218062
-    @Valid
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Interest> interestSet = new HashSet<>();

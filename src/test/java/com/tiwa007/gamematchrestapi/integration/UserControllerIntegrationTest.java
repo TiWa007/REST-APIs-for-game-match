@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 public class UserControllerIntegrationTest {
+
     @Autowired
     private MockMvc mockMvc;
 

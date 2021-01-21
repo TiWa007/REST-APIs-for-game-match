@@ -32,7 +32,6 @@ public class UserRequest {
     @InStringArray(message = "Geography should be one of 'Europe', 'Asia', 'USA'", values = {"Europe","Asia", "USA"})
     private String geography;
 
-    //  One to Many   https://blog.csdn.net/liyiming2017/article/details/90218062
     @Valid
     private Set<InterestRequest> interestSet = new HashSet<>();
 

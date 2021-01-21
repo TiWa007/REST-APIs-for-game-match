@@ -6,6 +6,8 @@ Main features include:
 - Game auto-matching based on user geography, interest game and interest level
 - Search maximum credits based on user interest game and level
 
+Slides used in the technical interview: [SlidesForAPIDesign.pdf](SlidesForAPIDesign.pdf) and [SlidesForAPIDesign.pptx](SlidesForAPIDesign.pptx)
+
 ### Built With
 - [Java](https://www.java.com/en/) - Java 8
 - [Spring Boot](https://spring.io/projects/spring-boot) - Spring Boot REST API
@@ -21,23 +23,24 @@ Main features include:
 
 #### Architecture
 The below image shows the high level architecture of the backend server.
-- **Client**: The client side send HTTP request to backend server. The data is transmitted using JSON format.
+- **Client**: The client side sends HTTP request to backend server. The data is transmitted using JSON format.
 - **Controller layer**: The controller layer implements REST API.
+- **Service layer**: The business logic of the system.
 - **Data access layer**: The data access layer implements Spring Data JPA.
 - **Data storage** The storage layer of the application uses in-memory H2 Database, a relational database
 - **Common**: The Common component contains utility code (exception handling, configurations, etc.) used across the application.
-\
-Package overview:
+
+##### Package overview:
 - **`gamematchrestapi.controller`**: Provides the REST API.
-- **`gamematchrestapi.service`**: Main logic of the application in POJOs (Plain Old Java Objects).
+- **`gamematchrestapi.service`**: Main logic of the application.
 - **`gamematchrestapi.entity`**: Classes that represent persistable entities.
 - **`gamematchrestapi.repository`**: Classes performs CRUD (Create, Read, Update, Delete) operations and act as the bridge to the H2 Database.
 - **`gamematchrestapi.common`**:  Common component contains custom exceptions and configuration of Swagger 3 and CORS.
 
-![High Level Architecture](docs/images/highlevelArchitecture.png)
+![High Level Architecture](docs/images/highlevelArchitecture1.png)
 
 #### REST API Design
-The following tables shows the design of the REST API. The class ``UserController`` implements No. 1-8 API methods for ``User`` entity. 
+The following tables show the design of the REST API. The class ``UserController`` implements No. 1-8 API methods for ``User`` entity. 
 The class ``InterestController`` implements No. 9-13 API methods for ``Interest`` entity. 
 ![REST API Design1](docs/images/RESTAPI1.png)
 ![REST API Design2](docs/images/RESTAPI2.png)
@@ -46,7 +49,7 @@ The class ``InterestController`` implements No. 9-13 API methods for ``Interest`
 
 The service layer handles the business logic of the system. 
 It is responsible for: 
-- Managing relationships between entities, e.g. cascade logic for create/update/delete.
+- Managing relationships between entities, i.e. logic for create/update/delete.
 - Searching for desired user and interest
 
 ##### Datamodel
@@ -76,7 +79,7 @@ API for updating:
 
 API for deleting:
 + Attempt to delete an entity that does not exist: Throws `InvalidRequestException`.
-+ Cascade policy: When a parent entity is deleted, entities that have referential integrity with the deleted entity should also be deleted.
++ Cascade policy: When a parent entity is deleted, entities that have with the deleted entity should also be deleted.
 
 API usage was documented using ``Swagger 3`` and the document is available at http://localhost:8080/swagger-ui/#/ 
 when the server is running.
@@ -84,8 +87,8 @@ when the server is running.
 
 #### Unit testing
 
-- The controller classes was tested with Spring Boot and ``@WebMvcTest``
-- In the data access layer, JPA Queries of the repository classes was tested with Spring Boot and ``@DataJpaTest``
+- The controller classes were tested with Spring Boot and ``@WebMvcTest``
+- In the data access layer, JPA Queries of the repository classes were tested with Spring Boot and ``@DataJpaTest``
 - Integration Tests with ``@SpringBootTest``
 
 The following image shows the coverage of the unit testing. The method and line coverage are above 85%.
