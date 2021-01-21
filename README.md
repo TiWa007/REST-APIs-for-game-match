@@ -6,7 +6,7 @@ Main features include:
 - Game auto-matching based on user geography, interest game and interest level
 - Search maximum credits based on user interest game and level
 
-Slides used in the technical interview: [SlidesForAPIDesign.pdf](SlidesForAPIDesign.pdf) and [SlidesForAPIDesign.pptx](SlidesForAPIDesign.pptx)
+Slides used in the technical interview: [SlidesForAPIDesign.pdf](SlidesForAPIDesign.pdf)
 
 ### Built With
 - [Java](https://www.java.com/en/) - Java 8
